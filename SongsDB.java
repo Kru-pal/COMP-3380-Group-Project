@@ -73,9 +73,9 @@ public class SongsDB {
                     break;
                 case 2:
                     console.nextLine(); // Consume the newline character
-                    System.out.print("Enter artist name: ");
-                    artistName = console.nextLine();
-                    artistGenresSearch(artistName);
+                    System.out.print("Enter Genre name: ");
+                    String GenreName = console.nextLine();
+                    listArtistsByGenre(GenreName);
                     break;
                 case 3:
                     console.nextLine(); // Consume the newline character
@@ -167,11 +167,11 @@ public class SongsDB {
 
 //Lists all songs added to Spotify between the specified dates
 public static void listSongsAddedBetweenDates(int startYear, int startMonth, int startDay,
-                                               int endYear, int endMonth, int endDay) {
+                                              int endYear, int endMonth, int endDay) {
     String query = "SELECT * FROM Songs " +
-                   "WHERE CAST(CONVERT(varchar, [year]) + '-' + " +
-                   "CONVERT(varchar, [month]) + '-' + " +
-                   "CONVERT(varchar, [day]) AS DATETIME) " +
+                   "WHERE CONVERT(DATETIME, CONVERT(VARCHAR, [year]) + '-' + " +
+                   "CONVERT(VARCHAR, [month]) + '-' + " +
+                   "CONVERT(VARCHAR, [day]), 102) " +
                    "BETWEEN ? AND ?";
 
     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -201,6 +201,7 @@ public static void listSongsAddedBetweenDates(int startYear, int startMonth, int
         e.printStackTrace();
     }
 }
+
 
 //Lists all artists associated with the specified genre
 public static void listArtistsByGenre(String genre) {
