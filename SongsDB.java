@@ -3,10 +3,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -175,8 +177,8 @@ public static void listSongsAddedBetweenDates(int startYear, int startMonth, int
                    "BETWEEN ? AND ?";
 
     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-        preparedStatement.setString(1, startYear + "-" + startMonth + "-" + startDay);
-        preparedStatement.setString(2, endYear + "-" + endMonth + "-" + endDay);
+        preparedStatement.setDate(1, Date.valueOf(LocalDate.of(startYear, startMonth, startDay)));
+        preparedStatement.setDate(2, Date.valueOf(LocalDate.of(endYear, endMonth, endDay)));
 
         try (ResultSet resultSet = preparedStatement.executeQuery()) {
             // Display the results
@@ -229,6 +231,11 @@ public static void listArtistsByGenre(String genre) {
 
 //Lists all songs with the specified label
 public static void listSongsByDurationRange(int minDuration, int maxDuration) {
+    if (minDuration > maxDuration) {
+        System.out.println("Error: Minimum duration should be less than or equal to maximum duration.");
+        return;
+    }
+
     String query = "SELECT * FROM Songs WHERE trackDuration BETWEEN ? AND ?";
 
     try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -250,6 +257,7 @@ public static void listSongsByDurationRange(int minDuration, int maxDuration) {
         e.printStackTrace();
     }
 }
+
 
 
 //Lists all songs with the specified label
