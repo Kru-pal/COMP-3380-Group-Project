@@ -1,23 +1,11 @@
-import java.beans.Statement;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.SynchronousQueue;
-import java.util.stream.Collectors;
-
-// import org.apache.ibatis.executor.ReuseExecutor;
-
 
 public class SongsDB {
 
@@ -25,9 +13,6 @@ public class SongsDB {
 	public static void main(String[] args) {
 		connection = SetUPConnection.getConnection();
 		runProgram();
-
-
-
 	}
 
     public static void runProgram() {
@@ -199,6 +184,8 @@ public static void listSongsAddedBetweenDates(int startYear, int startMonth, int
             }
         }
 
+    } catch (DateTimeException e) {
+        System.out.println("Error: Invalid date input. Please enter valid date values.");
     } catch (SQLException e) {
         e.printStackTrace();
     }
