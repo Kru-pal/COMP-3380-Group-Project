@@ -1,23 +1,11 @@
-import java.beans.Statement;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.SynchronousQueue;
-import java.util.stream.Collectors;
-
-// import org.apache.ibatis.executor.ReuseExecutor;
-
 
 public class SongsDB {
 
@@ -25,146 +13,144 @@ public class SongsDB {
 	public static void main(String[] args) {
 		connection = SetUPConnection.getConnection();
 		runProgram();
-
-
-
 	}
 
     public static void runProgram() {
-        Scanner console = new Scanner(System.in);
+        try (Scanner console = new Scanner(System.in)) {
+            while (true) {
+                System.out.println("Menu:");
+                System.out.println("1. Artist Collaborator Search");
+                System.out.println("2. Artist Genres Search");
+                System.out.println("3. Artist Info");
+                System.out.println("4. Artist Genres Name Search");
+                System.out.println("5. Get Song Info");
+                System.out.println("6. Album Name Search");
+                System.out.println("7. List Top Ten Artists With Collaborators");
+                System.out.println("8. List Top Ten Albums By Artists");
+                System.out.println("9. List Top Ten Artists With Most Genres");
+                System.out.println("10. List Top Ten Label With Most Songs");
+                System.out.println("11. List Top Ten Genres");
+                System.out.println("12. List Ten Least Common Genres");
+                System.out.println("13. List Top Ten Oldest Albums");
+                System.out.println("14. List Top Ten Youngest Albums");
+                System.out.println("15. List Songs By Label");
+                System.out.println("16. List Songs By Duration Range");
+                System.out.println("17. List Artists By Genre");
+                System.out.println("18. List Songs Added Between Dates");
+                System.out.println("0. Exit");
 
-        while (true) {
-            System.out.println("Menu:");
-            System.out.println("1. Artist Collaborator Search");
-            System.out.println("2. Artist Genres Search");
-            System.out.println("3. Artist Info");
-            System.out.println("4. Artist Genres Name Search");
-            System.out.println("5. Get Song Info");
-            System.out.println("6. Album Name Search");
-            System.out.println("7. List Top Ten Artists With Collaborators");
-            System.out.println("8. List Top Ten Albums By Artists");
-            System.out.println("9. List Top Ten Artists With Most Genres");
-            System.out.println("10. List Top Ten Label With Most Songs");
-            System.out.println("11. List Top Ten Genres");
-            System.out.println("12. List Ten Least Common Genres");
-            System.out.println("13. List Top Ten Oldest Albums");
-            System.out.println("14. List Top Ten Youngest Albums");
-            System.out.println("15. List Songs By Label");
-            System.out.println("16. List Songs By Duration Range");
-            System.out.println("17. List Artists By Genre");
-            System.out.println("18. List Songs Added Between Dates");
-            System.out.println("0. Exit");
+                System.out.print("Enter your choice: ");
+                int choice;
 
-            System.out.print("Enter your choice: ");
-            int choice;
+                // Check if the input is an integer
+                while (!console.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a number.");
+                    console.next(); // Consume the invalid input
+                }
 
-            // Check if the input is an integer
-            while (!console.hasNextInt()) {
-                System.out.println("Invalid input. Please enter a number.");
-                console.next(); // Consume the invalid input
-            }
+                choice = console.nextInt();
 
-            choice = console.nextInt();
-
-            switch (choice) {
-                case 1:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter artist name: ");
-                    String artistName = console.nextLine();
-                    artistCollaboratorSearch(artistName);
-                    break;
-                case 2:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter Genre name: ");
-                    String GenreName = console.nextLine();
-                    listArtistsByGenre(GenreName);
-                    break;
-                case 3:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter artist name: ");
-                    artistName = console.nextLine();
-                    artistInfo(artistName);
-                    break;
-                case 4:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter artist name: ");
-                    artistName = console.nextLine();
-                    artistGenresNameSearch(artistName);
-                    break;
-                case 5:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter song title: ");
-                    String songTitle = console.nextLine();
-                    getSongInfo(songTitle);
-                    break;
-                case 6:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter album name: ");
-                    String albumName = console.nextLine();
-                    albumNameSearch(albumName);
-                    break;
-                case 7:
-                    listTopTenArtistsWithCollaborators();
-                    break;
-                case 8:
-                    listTopTenAlbumsByArtists();
-                    break;
-                case 9:
-                    listTopTenArtistsWithMostGenres();
-                    break;
-                case 10:
-                    listTopTenLabelsWithMostSongs();
-                    break;
-                case 11:
-                    listTopTenGenres();
-                    break;
-                case 12:
-                    listTenLeastCommonGenres();
-                    break;
-                case 13:
-                    listTopTenOldestAlbums();
-                    break;
-                case 14:
-                    listTopTenYoungestAlbums();
-                    break;
-                case 15:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter label name: ");
-                    String labelName = console.nextLine();
-                    listSongsByLabel(labelName);
-                    break;
-                case 16:
-                    System.out.print("Enter minimum duration (in seconds): ");
-                    int minDuration = console.nextInt();
-                    System.out.print("Enter maximum duration (in seconds): ");
-                    int maxDuration = console.nextInt();
-                    listSongsByDurationRange(minDuration, maxDuration);
-                    break;
-                case 17:
-                    console.nextLine(); // Consume the newline character
-                    System.out.print("Enter genre: ");
-                    String genre = console.nextLine();
-                    listArtistsByGenre(genre);
-                    break;
-                case 18:
-                    System.out.print("Enter start date (YYYY MM DD): ");
-                    int startYear = console.nextInt();
-                    int startMonth = console.nextInt();
-                    int startDay = console.nextInt();
-                    System.out.print("Enter end date (YYYY MM DD): ");
-                    int endYear = console.nextInt();
-                    int endMonth = console.nextInt();
-                    int endDay = console.nextInt();
-                    listSongsAddedBetweenDates(startYear, startMonth, startDay, endYear, endMonth, endDay);
-                    break;
-                case 0:
-                    System.out.println("Exiting program. Goodbye!");
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                switch (choice) {
+                    case 1:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter artist name: ");
+                        String artistName = console.nextLine();
+                        artistCollaboratorSearch(artistName);
+                        break;
+                    case 2:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter Genre name: ");
+                        String GenreName = console.nextLine();
+                        listArtistsByGenre(GenreName);
+                        break;
+                    case 3:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter artist name: ");
+                        artistName = console.nextLine();
+                        artistInfo(artistName);
+                        break;
+                    case 4:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter artist name: ");
+                        artistName = console.nextLine();
+                        artistGenresNameSearch(artistName);
+                        break;
+                    case 5:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter song title: ");
+                        String songTitle = console.nextLine();
+                        getSongInfo(songTitle);
+                        break;
+                    case 6:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter album name: ");
+                        String albumName = console.nextLine();
+                        albumNameSearch(albumName);
+                        break;
+                    case 7:
+                        listTopTenArtistsWithCollaborators();
+                        break;
+                    case 8:
+                        listTopTenAlbumsByArtists();
+                        break;
+                    case 9:
+                        listTopTenArtistsWithMostGenres();
+                        break;
+                    case 10:
+                        listTopTenLabelsWithMostSongs();
+                        break;
+                    case 11:
+                        listTopTenGenres();
+                        break;
+                    case 12:
+                        listTenLeastCommonGenres();
+                        break;
+                    case 13:
+                        listTopTenOldestAlbums();
+                        break;
+                    case 14:
+                        listTopTenYoungestAlbums();
+                        break;
+                    case 15:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter label name: ");
+                        String labelName = console.nextLine();
+                        listSongsByLabel(labelName);
+                        break;
+                    case 16:
+                        System.out.print("Enter minimum duration (in seconds): ");
+                        int minDuration = console.nextInt();
+                        System.out.print("Enter maximum duration (in seconds): ");
+                        int maxDuration = console.nextInt();
+                        listSongsByDurationRange(minDuration, maxDuration);
+                        break;
+                    case 17:
+                        console.nextLine(); // Consume the newline character
+                        System.out.print("Enter genre: ");
+                        String genre = console.nextLine();
+                        listArtistsByGenre(genre);
+                        break;
+                    case 18:
+                        System.out.print("Enter start date (YYYY MM DD): ");
+                        int startYear = console.nextInt();
+                        int startMonth = console.nextInt();
+                        int startDay = console.nextInt();
+                        System.out.print("Enter end date (YYYY MM DD): ");
+                        int endYear = console.nextInt();
+                        int endMonth = console.nextInt();
+                        int endDay = console.nextInt();
+                        listSongsAddedBetweenDates(startYear, startMonth, startDay, endYear, endMonth, endDay);
+                        break;
+                    case 0:
+                        System.out.println("Exiting program. Goodbye!");
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
             }
         }
+        
     }
 
 //Lists all songs added to Spotify between the specified dates
@@ -199,6 +185,8 @@ public static void listSongsAddedBetweenDates(int startYear, int startMonth, int
             }
         }
 
+    } catch (DateTimeException e) {
+        System.out.println("Error: Invalid date input. Please enter valid date values.");
     } catch (SQLException e) {
         e.printStackTrace();
     }
