@@ -41,8 +41,77 @@ public class csvToSql {
     try {
         File myObj = new File("data.txt");
 
-        FileWriter myWriter = new FileWriter("output.txt");
+        FileWriter myWriter = new FileWriter("songsSQL.sql");
         Scanner myReader = new Scanner(myObj, "UTF-8");
+        
+        // write out the create tables and drop tables
+            myWriter.write("use cs3380;");
+            myWriter.write("--drop table if exists:\n");
+            myWriter.write("DROP TABLE IF EXISTS \"Songs\";\n");
+            myWriter.write("DROP TABLE IF EXISTS \"Albums\";\n");
+            myWriter.write("DROP TABLE IF EXISTS \"Artists\";\n");
+            myWriter.write("DROP TABLE IF EXISTS \"ArtistsSong\";\n");
+            myWriter.write("DROP TABLE IF EXISTS \"ArtistGenres\";\n");
+            myWriter.write("DROP TABLE IF EXISTS \"AlbumArtists\";\n");
+            myWriter.write("DROP TABLE IF EXISTS \"SongLabels\";\n\n");
+
+            myWriter.write("--create tables:\n");
+            myWriter.write("CREATE TABLE \"Songs\" (\n");
+            myWriter.write("    \"songURI\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    \"songName\" NVARCHAR(MAX) DEFAULT 'N/A',\n");
+            myWriter.write("    \"songNum\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    \"trackDuration\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    \"year\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    \"month\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    \"day\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    PRIMARY KEY(\"songURI\")\n");
+            myWriter.write(");\n\n");
+
+            myWriter.write("CREATE TABLE \"Albums\" (\n");
+            myWriter.write("    \"uri\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    \"albumName\" NVARCHAR(MAX) DEFAULT 'N/A',\n");
+            myWriter.write("    \"year\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    \"month\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    \"day\" INTEGER DEFAULT 0,\n");
+            myWriter.write("    PRIMARY KEY(\"uri\")\n");
+            myWriter.write(");\n\n");
+
+            myWriter.write("CREATE TABLE \"Artists\" (\n");
+            myWriter.write("    \"artistURI\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    \"artistName\" NVARCHAR(MAX) DEFAULT 'N/A',\n");
+            myWriter.write("    PRIMARY KEY(\"artistURI\")\n");
+            myWriter.write(");\n\n");
+
+            myWriter.write("CREATE TABLE \"ArtistsSong\" (\n");
+            myWriter.write("    \"artistURI\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    \"songURI\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    PRIMARY KEY(\"songURI\", \"artistURI\"),\n");
+            myWriter.write("    FOREIGN KEY(\"artistURI\") REFERENCES \"Artists\"(\"artistURI\"),\n");
+            myWriter.write("    FOREIGN KEY(\"songURI\") REFERENCES \"Songs\"(\"songURI\")\n");
+            myWriter.write(");\n\n");
+
+            myWriter.write("CREATE TABLE \"ArtistGenres\" (\n");
+            myWriter.write("    \"artistURI\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    \"genre\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    PRIMARY KEY(\"artistURI\", \"genre\"),\n");
+            myWriter.write("    FOREIGN KEY(\"artistURI\") REFERENCES \"Artists\"(\"artistURI\")\n");
+            myWriter.write(");\n\n");
+
+            myWriter.write("CREATE TABLE \"AlbumArtists\" (\n");
+            myWriter.write("    \"albumURI\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    \"artistURI\" VARCHAR(100) DEFAULT 'N/A',\n");
+            myWriter.write("    PRIMARY KEY(\"albumURI\", \"artistURI\"),\n");
+            myWriter.write("    FOREIGN KEY(\"artistURI\") REFERENCES \"Artists\"(\"artistURI\"),\n");
+            myWriter.write("    FOREIGN KEY(\"albumURI\") REFERENCES \"Albums\"(\"uri\")\n");
+            myWriter.write(");\n\n");
+
+            myWriter.write("CREATE TABLE \"SongLabels\" (\n");
+            myWriter.write("    \"songURI\" VARCHAR(100),\n");
+            myWriter.write("    \"songlabel\" VARCHAR(100),\n");
+            myWriter.write("    PRIMARY KEY(\"songURI\"),\n");
+            myWriter.write("    FOREIGN KEY(\"songURI\") REFERENCES \"Songs\"(\"songURI\")\n");
+            myWriter.write(");\n\n");
+
       
         int index = 0;
         while (myReader.hasNextLine()) {
